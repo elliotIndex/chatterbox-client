@@ -1,4 +1,7 @@
 var app = {
+  username: window.location.search.split("=")[1],
+  currentUser: undefined,
+  currentRoom: undefined,
   server: 'https://api.parse.com/1/classes/chatterbox',
   init: function() {
     initialize();
@@ -16,16 +19,24 @@ var app = {
     $send(message);
   },
   addRoom: function(roomName) {
-    $('#roomSelect').append('<option value="' + escapeHtml(roomName) + '">' + escapeHtml(roomName) + '</option>');
+    app.send({
+      username: app.username,
+      text: 'Welcome to ' + roomName + '!',
+      roomname: roomName
+    });
   },
   addFriend: function() {
     event.preventDefault();
-    var $user = $(this).text();
-    $update($user);
+    app.currentUser = $(this).text();
+    $update();
   },
   handleSubmit: function() {
-    var $log = $('#message').val();
-    console.log($log);
+    var message = {
+      username: app.username,
+      text: $('#message').val(),
+      roomname: $('#roomSelect').val()
+    };
+    $send(message);
   }
 };
 
@@ -47,86 +58,84 @@ var escapeHtml = function(string) {
   });
 };
 
-var updateRoomNames = function(roomNames) {
-  var $options = '';
-  $.each(roomNames, function(key, room) {
-    $options += '<option>' + room + '</option>';
-  });
-  $('#roomSelect').html($options);
-};
 
 var initialize = function() {
 
   $update();
   $('.update').on('click', $update);
+  $('.submit').on('click', app.handleSubmit);
+  $('.addRoom').on('click', function(){
+    var $room = $('#message').val();
+    $('#send').submit(function(e){
+      e.preventDefault();
+    });
+    app.addRoom($room);
+  });
   $('select').on('change', function() {});
   $('body').on('click', '.username', app.addFriend);
-  $('body').on('click', '.submit', app.handleSubmit);
 };
 
-var $update = function(username) {
+var $update = function(username, currentRoom) {
   var $str = '';
   var roomNames = {};
 
-  var parseMessage = function(index, message) {
-    if (!roomNames[message.roomname]) {
-      roomNames[message.roomname] = escapeHtml(message.roomname);
-    }
-    $str += formatMessage(message);
+  var updateRoomNames = function(roomNames, currentRoom) {
+    var $options = '';
+    $.each(roomNames, function(key, room) {
+      if(currentRoom === room) {
+        $options += '<option selected>' + room + '</option>';
+      } else {
+        $options += '<option>' + room + '</option>';        
+      }
+    });
+    $('#roomSelect').html($options);
   };
+
   $.ajax({
     url: app.server,
     type: 'GET',
     data: { 'order': '-createdAt',
-            'limit': 1000},
+            'limit': 200},
     dataType: 'json',
     contentType: 'application/json',
     success: function(data) {
       var $str = '';
 
       $.each(data.results, function(index, message) {
-        if (message.username === username || username === undefined) {
+        if (message.username === app.currentUser || app.currentUser === undefined) {
 
           if (!roomNames[message.roomname]) {
             roomNames[message.roomname] = escapeHtml(message.roomname);
           }
           $str += '<div>';
-          $str += '<a href="#" class="username">' + escapeHtml(message.username) + '</a>';
           $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
+          $str += '<a href="#" class="username">' + escapeHtml(message.username) + '</a>';
           $str += '</div>';
         }
-        // $str += formatMessage(message);
+        return true;
       });
       $('#chats').html($str);
-      updateRoomNames(roomNames);
+      updateRoomNames(roomNames, currentRoom);
+      
     },
     error: function(data) {
-      console.log('failure', data);
-      console.error('chatterbox: Failed to send message');
+      $('#chats').html('<div>' + JSON.stringify(data) + '</div>');
+      console.error('chatterbox: Failed to retrieve data');
     }
   });
 };
 
-var formatMessage = function(messageObj) {
-  var $str = '';
-  $str += '<div>';
-  $str += '<div class="username">' + escapeHtml(message.username) + '</div>';
-  $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
-  $str += '</div>';
-  return $str;
-};
 
 var $send = function(messageObj) {
-  $('#chats').append('<div>' + escapeHtml(messageObj.text) + '</div>');
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: app.server,
     type: 'POST',
     data: JSON.stringify(messageObj),
     dataType: 'json',
     contentType: 'application/json',
     success: function(data) {
-      console.log("line 100");
-      $update();
+//       console.log("successful send~!");
+//       $update(messageObj.username, messageObj.roomname);
     },
     error: function(data) {
       console.log('failure', data);

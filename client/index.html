@@ -16,16 +16,19 @@
   <body>
     <div id="main">
     <h1>chatterbox</h1>
-    <button class="update">Update</button>
     <div id="rooms">
       Room:
       <select id="roomSelect">
       </select>
     </div>
-    <form action="#" id="send" method="post">
-      <input type="text" name="message" id="message"/>
-      <input type="submit" name="submit" class="submit"/>
-    </form>
+    <div class="formContainer">
+      <form action="#" id="send" method="post">
+        <input type="text" name="message" id="message" placeholder="Enter message here"/>
+        <input type="submit" name="submit" class="submit"/>
+      </form>
+      <button class="update">Update</button>
+      <button class="addRoom">Add Room</button>
+    </div>
     <div id="chats"></div>
   </div>
   </body>
