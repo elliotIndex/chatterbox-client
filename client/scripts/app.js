@@ -1,7 +1,7 @@
 var app = {
   server: 'https://api.parse.com/1/classes/chatterbox',
   init: function() {
-    $(document).ready(initialize);
+    initialize();
   },
   send: function(message) {
     $send(message);
@@ -13,13 +13,24 @@ var app = {
     $('#chats').empty();
   },
   addMessage: function(message) {
-    var $data = $send(message);
-    console.log($data);
+    $send(message);
   },
   addRoom: function(roomName) {
-    $('#roomSelect').append('<option value="' + escapeHtml(roomName) + '">' + escapeHtml(roomName) + '</option>')
+    $('#roomSelect').append('<option value="' + escapeHtml(roomName) + '">' + escapeHtml(roomName) + '</option>');
+  },
+  addFriend: function() {
+    event.preventDefault();
+    var $user = $(this).text();
+    $update($user);
+  },
+  handleSubmit: function() {
+    var $log = $('#message').val();
+    console.log($log);
   }
 };
+
+// If we want to make a robust escape
+// Escaping &, <, >, ", ', `, , !, @, $, %, (, ), =, +, {, }, [, and ] is almost enough
 
 var entityMap = {
   "&": "&amp;",
@@ -41,66 +52,74 @@ var updateRoomNames = function(roomNames) {
   $.each(roomNames, function(key, room) {
     $options += '<option>' + room + '</option>';
   });
-
-  $('.rooms').html($options);
+  $('#roomSelect').html($options);
 };
 
 var initialize = function() {
 
   $update();
-
   $('.update').on('click', $update);
-
-
-  $('select').on('change', function() {
-    // console.log($('option:selected').text());
-  });
-
-  $('.update').click();
+  $('select').on('change', function() {});
+  $('body').on('click', '.username', app.addFriend);
+  $('body').on('click', '.submit', app.handleSubmit);
 };
 
-var $update = function() {
+var $update = function(username) {
   var $str = '';
   var roomNames = {};
 
   var parseMessage = function(index, message) {
-    roomNames[message.roomname] = escapeHtml(message.roomname);
-    $str += '<div>' + escapeHtml(message.text) + '</div>';
+    if (!roomNames[message.roomname]) {
+      roomNames[message.roomname] = escapeHtml(message.roomname);
+    }
+    $str += formatMessage(message);
   };
-
   $.get(app.server, function(data) {
+    var $str = '';
 
-    $.each(data.results, parseMessage);
+    $.each(data.results, function(index, message) {
+      if (message.username === username || username === undefined) {
 
+        if (!roomNames[message.roomname]) {
+          roomNames[message.roomname] = escapeHtml(message.roomname);
+        }
+        $str += '<div>';
+        $str += '<a href="#" class="username">' + escapeHtml(message.username) + '</a>';
+        $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
+        $str += '</div>';
+      }
+      // $str += formatMessage(message);
+    });
     $('#chats').html($str);
-
     updateRoomNames(roomNames);
   });
 };
 
+var formatMessage = function(messageObj) {
+  var $str = '';
+  $str += '<div>';
+  $str += '<div class="username">' + escapeHtml(message.username) + '</div>';
+  $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
+  $str += '</div>';
+  return $str;
+};
+
 var $send = function(messageObj) {
   $('#chats').append('<div>' + escapeHtml(messageObj.text) + '</div>');
-
   $.ajax({
-    // This is the url you should use to communicate with the parse API server.
     url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'POST',
     data: JSON.stringify(messageObj),
     dataType: 'json',
     contentType: 'application/json',
     success: function(data) {
-
+      console.log("line 100");
+      $update();
     },
     error: function(data) {
       console.log('failure', data);
-      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
       console.error('chatterbox: Failed to send message');
     }
   });
-};
 
-var message = {
-  username: 'gerritLovesGettingHacked',
-  text: 'lets hack gerrit',
-  roomname: '4chan'
 };

@@ -15,13 +15,25 @@
   </head>
   <body>
     <div id="main">
-      <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
-      <select class="rooms"></select>
-      <button class="submit">Troll Gerrit</button>
-      <button class="update">Update</button>
+    <h1>chatterbox</h1>
+    <button class="update">Update</button>
+    <div id="rooms">
+      Room:
+      <select id="roomSelect">
+      </select>
     </div>
+    <form action="#" id="send" method="post">
+      <input type="text" name="message" id="message"/>
+      <input type="submit" name="submit" class="submit"/>
+    </form>
     <div id="chats"></div>
+  </div>
   </body>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+    app.init();
+  });
+  </script>
 </html>
 
