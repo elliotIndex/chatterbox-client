@@ -4,10 +4,20 @@ var app = {
     $(document).ready(initialize);
   },
   send: function(message) {
-    send(message);
+    $send(message);
   },
-  fetch: function(){
+  fetch: function() {
     $update();
+  },
+  clearMessages: function() {
+    $('#chats').empty();
+  },
+  addMessage: function(message) {
+    var $data = $send(message);
+    console.log($data);
+  },
+  addRoom: function(roomName) {
+    $('#roomSelect').append('<option value="' + escapeHtml(roomName) + '">' + escapeHtml(roomName) + '</option>')
   }
 };
 
@@ -62,14 +72,14 @@ var $update = function() {
 
     $.each(data.results, parseMessage);
 
-    $('messages').html($str);
+    $('#chats').html($str);
 
     updateRoomNames(roomNames);
   });
 };
 
-var send = function(messageObj) {
-  console.log(messageObj);
+var $send = function(messageObj) {
+  $('#chats').append('<div>' + escapeHtml(messageObj.text) + '</div>');
 
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
@@ -77,12 +87,12 @@ var send = function(messageObj) {
     type: 'POST',
     data: JSON.stringify(messageObj),
     dataType: 'json',
-    contentType: 'application/x-www-form-urlencoded;charset=ISO-8859-15',
+    contentType: 'application/json',
     success: function(data) {
-      // $update();
-      return data;
+
     },
     error: function(data) {
+      console.log('failure', data);
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
       console.error('chatterbox: Failed to send message');
     }
