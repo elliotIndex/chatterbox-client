@@ -74,24 +74,36 @@ var $update = function(username) {
     }
     $str += formatMessage(message);
   };
-  $.get(app.server, function(data) {
-    var $str = '';
+  $.ajax({
+    url: app.server,
+    type: 'GET',
+    data: { 'order': '-createdAt',
+            'limit': 1000},
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function(data) {
+      var $str = '';
 
-    $.each(data.results, function(index, message) {
-      if (message.username === username || username === undefined) {
+      $.each(data.results, function(index, message) {
+        if (message.username === username || username === undefined) {
 
-        if (!roomNames[message.roomname]) {
-          roomNames[message.roomname] = escapeHtml(message.roomname);
+          if (!roomNames[message.roomname]) {
+            roomNames[message.roomname] = escapeHtml(message.roomname);
+          }
+          $str += '<div>';
+          $str += '<a href="#" class="username">' + escapeHtml(message.username) + '</a>';
+          $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
+          $str += '</div>';
         }
-        $str += '<div>';
-        $str += '<a href="#" class="username">' + escapeHtml(message.username) + '</a>';
-        $str += '<div class="message">' + escapeHtml(message.text) + '</div>';
-        $str += '</div>';
-      }
-      // $str += formatMessage(message);
-    });
-    $('#chats').html($str);
-    updateRoomNames(roomNames);
+        // $str += formatMessage(message);
+      });
+      $('#chats').html($str);
+      updateRoomNames(roomNames);
+    },
+    error: function(data) {
+      console.log('failure', data);
+      console.error('chatterbox: Failed to send message');
+    }
   });
 };
 
