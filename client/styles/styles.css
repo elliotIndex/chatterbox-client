@@ -2,30 +2,32 @@ body {
     background: #eee;
     text-align: center;
     padding: 0 25px;
-    font-family: arial, sans-serif;
+    font-family: 'Raleway', sans-serif;
 }
 
 #main, #chats {
     width: auto;
     margin: auto;
     text-align: left;
-    background: white;
+    background: #eee;
 }
 
 #main {
-    padding: 0 53px;
+    padding: 0 53px 50px 53px;
+    background: #eee;
 }
 
 #main h1 {
     margin-top: 0;
     font-size: 35px;
-    margin-bottom: 5px;
+    margin-bottom: 30px;
     padding: 5px;
 }
 
-#main h1 span {
-    font-style:italic;
+h1 {
+    border-bottom: 2px solid black;
 }
+
 
 #main ul {
     padding-left: 20px;
@@ -61,10 +63,16 @@ body {
 }
 
 form {
-    width: 75%;
+    width: 40%;
     float: left;
 }
 
+span {
+    /*margin: 10% 27%;*/
+    width: 50%;
+    /* Set the margin-left and margin-right automatically set */
+    margin: 0 auto; 
+}
 
 form input[type=text] {
     width: 70%;
@@ -104,6 +112,7 @@ form input[type=text] {
     border: solid 1px #ccc;
     margin-bottom: 5px;
     border-radius: 5px;
+    background: aliceblue
 }
 
 .username {
@@ -111,10 +120,22 @@ form input[type=text] {
     color: cornflowerblue;
     font-size: 12px;
 }
-
-select#roomSelect {
-    width: 200px;
+select {
+   background: #FFF;
+   margin-left: 20px;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   line-height: 1;
+   border: 1px solid #aaa;
+   border-radius: 5px;
+   height: 34px;
+   -webkit-appearance: none;
 }
+
+/*select#roomSelect {
+    width: 200px;
+}*/
 
 button {
     background: #aaa;
@@ -130,4 +151,12 @@ button {
     border: 0;
     padding: 5px;
     margin: 0 10px;
+}
+
+div#rooms {
+    font-size: 130%;
+}
+
+.bold {
+    font-weight: 800;
 }

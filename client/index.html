@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>chatterbox</title>
     <link rel="stylesheet" href="styles/styles.css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,300' rel='stylesheet' type='text/css'>
 
     <!-- dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
@@ -16,18 +17,16 @@
   <body>
     <div id="main">
     <h1>chatterbox</h1>
-    <div id="rooms">
-      Room:
-      <select id="roomSelect">
-      </select>
+    <div id="rooms">Room:<select id="roomSelect"></select>
     </div>
     <div class="formContainer">
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message" placeholder="Enter message here"/>
-        <input type="submit" name="submit" class="submit"/>
       </form>
+      <button class="submit">Submit</button>
       <button class="update">Update</button>
       <button class="addRoom">Add Room</button>
+      <button class="goHome">Home</button>
     </div>
     <div id="chats"></div>
   </div>
